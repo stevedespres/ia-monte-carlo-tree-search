@@ -14,19 +14,19 @@ class Game():
 
     # Nombre de tour = profondeur de l'arbre
     NUM_TURNS = 10
-    # Choix possibles ; 1, 2, 3
-    MOVES = [0, 1, 2]
+    # Choix possibles ; 1, 2, 3,4,5,6
+    MOVES = [0, 1, 2 ]
     # Valeur maximale
     MAX_VALUE = (5.0 * (NUM_TURNS - 1) * NUM_TURNS) / 2
-
+    # Objectif
     GOAL = 0
     # Nombre de mouvement
     num_moves = len(MOVES)
     # Initialisation
-    def __init__(self, value=0, moves=[], turn=NUM_TURNS):
+    def __init__(self, value=0, moves=[] ,turn = NUM_TURNS):
         self.value = value
-        self.turn = turn
         self.moves = moves
+        self.turn = turn
 
     # Etat suivant
     def next_state(self):
@@ -46,21 +46,7 @@ class Game():
         r = 1.0 - (abs(self.value-self.GOAL) / self.MAX_VALUE)
         return r
 
-    def __hash__(self):
-        return int(hashlib.md5(str(self.moves).encode('utf-8')).hexdigest(), 16)
-
-    def __eq__(self, other):
-        if hash(self) == hash(other):
-            return True
-        return False
-
-    def __repr__(self):
-        s = "Value: %d; Moves: %s" % (self.value, self.moves)
-        return s
-
-
 # Représentation d'un noeud
-
 class Node():
     #Initialisation
     def __init__(self, state, parent=None):
@@ -89,19 +75,16 @@ class Node():
         s = "Node; children: %d; visits: %d; reward: %f" % (len(self.children), self.visits, self.reward)
         return s
 
-
-# DESCENTE
-
-# Retourne le meilleur noeud enfant
+# Retourne l'arbre
 def UCTSEARCH(budget, root):
     for iter in range(int(budget)):
         front = TREEPOLICY(root)
         reward = DEFAULTPOLICY(front.state)
-        BACKUP(front, reward)
+        UPDATE(front, reward)
     return BESTCHILD(root, 0)
 
 
-#Calcule le meilleur noeuf enfant en calculant les UBC
+# Calcule le meilleur noeud enfant en calculant les UBC
 def BESTCHILD(node, scalar):
     bestscore = 0.0
     bestchildren = []
@@ -116,8 +99,7 @@ def BESTCHILD(node, scalar):
             bestscore = score
     return random.choice(bestchildren)
 
-
-# GROWTH
+# GROWTH : Choix de la branche à explorer
 def TREEPOLICY(node):
     while node.state.terminal() == False:
         if len(node.children) == 0:
@@ -131,14 +113,13 @@ def TREEPOLICY(node):
                 node = BESTCHILD(node, SCALAR)
     return node
 
-
+# Retourne une valeur estimée d'un noeud exploré
 def DEFAULTPOLICY(state):
     while state.terminal() == False:
         state = state.next_state()
     return state.reward()
 
-
-# ROLL OUT
+# ROLL OUT : exploration
 def EXPAND(node):
     tried_children = [c.state for c in node.children]
     new_state = node.state.next_state()
@@ -147,13 +128,8 @@ def EXPAND(node):
     node.add_child(new_state)
     return node.children[-1]
 
-
-
-
-
-
 # UPDATE
-def BACKUP(node, reward):
+def UPDATE(node, reward):
     while node != None:
         node.visits += 1
         node.reward += reward
@@ -161,7 +137,7 @@ def BACKUP(node, reward):
     return
 
 
-# Affiche les statistiques à une position donnée
+# Affiche les statistiques des noeuds enfants à une position donnée
 def DISPLAY(node, pos):
 
     level = len(pos);
@@ -181,21 +157,15 @@ def getChildren(node, idx):
 
     return node.children[idx]
 
-
-
 # Main
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='MCTS')
-    # Nombre smulations
-    parser.add_argument('--num_sims', action="store", required=True, type=int)
 
     args = parser.parse_args()
-    #Noeud courant
+    # Noeud courant
     current_node = Node(Game())
-    current_node = UCTSEARCH(args.num_sims, current_node)
-
+    # Lancement du MCTS avec 1000 simulations
+    current_node = UCTSEARCH(1000, current_node)
     POS_NODE = [0,1]
+    # Affichage des statistique des noeuds enfants à la position POS_NODE
     DISPLAY(current_node, POS_NODE)
-
-
-
