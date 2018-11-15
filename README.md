@@ -2,7 +2,6 @@
 
 Projet d'IA : algorithme MCTS Monte Carlo, exploration d'arbres
 
-
 ## Dossier HEXGAME
 
 Arène du jeu de HEX. MCTS non implémenté ; nous n'avons pas réussi à adapter notre algorithme mcts sur le joueur BOB.
@@ -41,3 +40,8 @@ A la position [0,1] dans l'arbre, nous obtenons le nombre de visite et les rewar
 Le meilleur choix possible est donc le noeud ayant le reward le plus élevé, soit le noeud 012.
 
 Nous n'avons pas réussit à adapter cet algorithme sur l'arène du jeu de HEX.
+
+## Projet secondaire
+
+En parallèle nous sommes partit sur une autre solution avec l'éllaboration d'un arbre des coups en JSON.
+Sur cette solution nous nous sommes arrêté à la création d'une classe Node et d'une classe Tree.
